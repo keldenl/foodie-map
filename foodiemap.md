@@ -1,4 +1,4 @@
-Food Locator
+# FoodieMap
 
 The goal of this team is to organize information for food-focused
 individuals using Yelp’s API by making data easily accessible to find
