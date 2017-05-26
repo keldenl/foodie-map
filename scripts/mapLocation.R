@@ -48,13 +48,23 @@ for(j in seq(0, total-1, 50)) {
 }
 df <- distinct(df, name, .keep_all = TRUE)
 
+## Hours filter
+
+
 curr_rating <- 0
 ## Rating filter 
 # df <- filter(df, rating >= 3)
 
+curr_price <- c('$', "$$")
+## Price filter
+# df <- filter(df, price %in% curr_price)
+
+mapNormal <- 15
+mapIn <- mapNormal - 1
+mapOut <- mapNormal + 1
 # Get a map for the location entered
 location <- c(lon = long_lat[1], lat = long_lat[2])
-map1 <- get_map(location = location, source = "google", zoom = 15)
+map1 <- get_map(location = location, source = "google", zoom = mapNormal)
 
 # Make a map with restaurants as points on it
 maps <- ggmap(map1) +
