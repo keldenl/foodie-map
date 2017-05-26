@@ -8,13 +8,20 @@ shinyUI(fluidPage(theme = "style.css",
     "))
   ),
   # Application title
-  headerPanel("Foodie Map"),
-  
-  # Sidebar with a slider input for the number of bi
-    # Show a plot of the generated distribution
-    mainPanel(
-      div(id="initSearch", textInput("loc", label = NULL, placeholder = "Enter your zip code or location"),
-        div(id="buttons", actionButton("submitSearch", "Search Map"), actionButton("logIn", "Surprise Me"))
+  navbarPage("Tabs", id="tabs",
+    tabPanel(title="Foodie Map", value="main",
+      
+      headerPanel("Foodie Map"),
+      # Sidebar with a slider input for the number of bi
+      # Show a plot of the generated distribution
+      mainPanel(
+        div(id="initSearch", textInput("loc", label = NULL, placeholder = "Enter your zip code or location"),
+            div(id="buttons", actionButton("submitSearch", "Search Map"), actionButton("logIn", "Surprise Me"))
+        )
       )
+    ),
+    tabPanel(title="Your Heatmap", value="graph",
+       actionButton("main", "Go back to main!")
     )
+  )
 ))

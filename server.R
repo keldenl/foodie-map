@@ -1,7 +1,7 @@
 library(shiny)
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
   
   # Expression that generates a histogram. The expression is
   # wrapped in a call to renderPlot to indicate that:
@@ -11,6 +11,11 @@ shinyServer(function(input, output) {
   #  2) Its output type is a plot
 
   observeEvent(input$submitSearch, {
+    updateTabsetPanel(session, inputId = "tabs", selected = "graph")
+  })
+  
+  observeEvent(input$main, {
+    updateTabsetPanel(session, inputId = "tabs", selected = "main")
   })
   
 })
