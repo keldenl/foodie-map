@@ -1,24 +1,31 @@
+## API/Dataframe Libraries
 library(httr)
 library(rjson)
 library(dplyr)
+
+## Map-related Libraries
 library(OpenStreetMap)
-library(ggmap)
-library(ggplot2)
 library(maps)
+# install.packages("ggmap", type = "source")
+library(ggmap)
+
+## Plot-related Libraries
+# install.packages("ggplot2", type = "source")
+library(ggplot2)
 library(plotly)
 
 # Changable Variables
 limit <- 50 # Unchanged
 total <- 200 # Total amount of restaurants you want to return (Max ~1000)
 
-loc <- "1135 ne campus parkway, wa" # Location you're searching for
+loc <- "c800 occidental ave s, seattle, wa" # Location you're searching for
 long_lat <- as.numeric(geocode(loc))
 loc <- revgeocode(long_lat, output="more") # View() to see more about the location
 zip <- loc$postal_code
 
 # df stores all the restaurant information
-df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, 
-                 rev_count=NULL, img=NULL, url=NULL, stringsAsFactors=FALSE)
+df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, price=NULL,
+                 rev_count=NULL, img=NULL, url=NULL)
 
 # Loop through and add restaurants to the dataframe df
 for(j in seq(0, total-1, 50)) {
@@ -30,14 +37,20 @@ for(j in seq(0, total-1, 50)) {
   
   for (i in 1:limit) {
     curr <- data$businesses[[i]]
+    if(is.null(curr$price)) { curr$price <- NA}
     curr_df <- data.frame(name=curr$name, id=curr$id, lat=curr$coordinates$latitude, long=curr$coordinates$longitude, 
-                          loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, rev_count=curr$review_count, 
-                          img=curr$image_url, url=curr$url)
+                          loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, price=curr$price,
+                          rev_count=curr$review_count, img=curr$image_url, url=curr$url)
+    print(nrow(curr_df))
     df <- rbind(df, curr_df)
     print(paste("Added", curr$name, "| Slot", i+j))
   }
 }
 df <- distinct(df, name, .keep_all = TRUE)
+
+curr_rating <- 0
+## Rating filter 
+# df <- filter(df, rating >= 3)
 
 # Get a map for the location entered
 location <- c(lon = long_lat[1], lat = long_lat[2])
