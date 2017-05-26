@@ -7,19 +7,20 @@ library(ggplot2)
 library(maps)
 library(plotly)
 
+# Changable Variables
+limit <- 50 # Unchanged
+total <- 200 # Total amount of restaurants you want to return (Max ~1000)
 
-limit <- 50
-total <- 200
-
-loc <- "1135 ne campus parkway, wa"
+loc <- "1135 ne campus parkway, wa" # Location you're searching for
 long_lat <- as.numeric(geocode(loc))
-loc <- revgeocode(long_lat, output="more")
+loc <- revgeocode(long_lat, output="more") # View() to see more about the location
 zip <- loc$postal_code
 
+# df stores all the restaurant information
 df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, 
                  rev_count=NULL, img=NULL, url=NULL, stringsAsFactors=FALSE)
 
-# Loop through and make multiple 
+# Loop through and add restaurants to the dataframe df
 for(j in seq(0, total-1, 50)) {
   offset <- j # Offset to the next set of 50 businesses
   query <- paste0("https://api.yelp.com/v3/businesses/search?location=", zip, "&limit=", limit,
@@ -36,17 +37,21 @@ for(j in seq(0, total-1, 50)) {
     print(paste("Added", curr$name, "| Slot", i+j))
   }
 }
-
 df <- distinct(df, name, .keep_all = TRUE)
 
+# Get a map for the location entered
 location <- c(lon = long_lat[1], lat = long_lat[2])
 map1 <- get_map(location = location, source = "google", zoom = 15)
 
+# Make a map with restaurants as points on it
 maps <- ggmap(map1) +
-  # Add markets of shootings
+  # Add restaurant markers
   geom_point(data=df, aes(name=name, rating=rating, x=long, y=lat), color="green") + 
   coord_fixed(1.3) +
+  
   # Labels
   labs(title="Restaurants near your location")
 maps <- ggplotly(maps, tooltip = c("name", "rating"), dynamicTicks = FALSE, width = 500)
+
+# Check out the map!
 maps
