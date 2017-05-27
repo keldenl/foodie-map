@@ -21,7 +21,20 @@ shinyUI(fluidPage(theme = "style.css",
       )
     ),
     tabPanel(title="Your Heatmap", value="graph",
-       actionButton("main", "Go back to main!")
+       actionButton("main", "Go back to main"),
+       checkboxInput("open.now", 
+                     label = h4("Open Now", style="color:pink"),
+                     value = FALSE),
+       numericInput("min.rating", 
+                    label = h3("Minimum Rating (1 ~ 5)", style = "color:pink"), 
+                    value = 3),
+       checkboxGroupInput("price.range", label = h3("Price Range", style="color:pink"), 
+                          choices = list("$" = 1, "$$" = 2, "$$$" = 3, "$$$$" = 4),
+                          selected = 2),
+       sliderInput("map.zoom", label = h3("Map Scope", style="color:pink"), 
+                   min = 1,
+                   max = 3,
+                   value = 2)
     )
   )
 ))
