@@ -25,8 +25,4 @@ shinyServer(function(input, output, session) {
   output$min.rating <- renderPrint({input$min.rating})
   output$price.range <- renderPrint({input$price.range})
   output$map.zoom <- renderPrint({input$map.zoom})
-  
-  
-  
-  
 })

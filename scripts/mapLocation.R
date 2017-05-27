@@ -16,9 +16,9 @@ library(plotly)
 
 # Changable Variables
 limit <- 50 # Unchanged
-total <- 50 # Total amount of restaurants you want to return (Max ~1000)
+total <- 500 # Total amount of restaurants you want to return (Max ~1000)
 
-loc <- "c800 occidental ave s, seattle, wa" # Location you're searching for
+loc <- "university way, seattle, wa" # Location you're searching for
 long_lat <- as.numeric(geocode(loc))
 loc <- revgeocode(long_lat, output="more") # View() to see more about the location
 zip <- loc$postal_code
@@ -67,22 +67,24 @@ curr_rating <- 0
 curr_price <- c('$', "$$")
 ## Price filter
 # df <- filter(df, price %in% curr_price)
-
 mapNormal <- 15
 mapIn <- mapNormal - 1
 mapOut <- mapNormal + 1
+mapZoom <- mapNormal
 # Get a map for the location entered
 location <- c(lon = long_lat[1], lat = long_lat[2])
-map1 <- get_map(location = location, source = "google", zoom = mapNormal)
+map1 <- get_map(location = location, source = "google", zoom = mapZoom)
 
+df$review_500 <- "> 500"
+df$review_500[df$rev_count <= 500] <- NA
 # Make a map with restaurants as points on it
 maps <- ggmap(map1) +
   # Add restaurant markers
-  geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price,
-                          x=long, y=lat), color="green") +
-  geom_density2d(data=df, aes(color=rating, x=long, y=lat)) +
-  scale_fill_gradient(low = "green", high = "red",
-                      guide = FALSE) +
+  geom_point(data=subset(df,rev_count <= 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
+                          x=long, y=lat, color=((subset(df,rev_count <= 500)$rev_count)), size=2)) +
+  geom_point(data=subset(df,rev_count > 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
+                                                   x=long, y=lat, fill=review_500, size=2)) +
+  scale_colour_gradient(low="yellow",high="red") +
   coord_fixed(1.3) +
 
   # Labels
