@@ -26,7 +26,7 @@ open_now <- FALSE
 
 # df stores all the restaurant information
 df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, price=NULL,
-                 rev_count=NULL, img=NULL, url=NULL)
+                 rev_count=NULL, img=NULL, url=NULL, categories=NULL)
 
 # Loop through and add restaurants to the dataframe df
 for(j in seq(0, total-1, 50)) {
@@ -39,17 +39,20 @@ for(j in seq(0, total-1, 50)) {
   for (i in 1:limit) {
     curr <- data$businesses[[i]]
     if(is.null(curr$price)) { curr$price <- NA}
+    print(curr$categories[[1]]$title)
     curr_df <- data.frame(name=curr$name, id=curr$id, lat=curr$coordinates$latitude, long=curr$coordinates$longitude, 
                           loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, price=curr$price,
-                          rev_count=curr$review_count, img=curr$image_url, url=curr$url)
-    print(nrow(curr_df))
+                          rev_count=curr$review_count, img=curr$image_url, url=curr$url, categories=curr$categories[[1]]$title)
     df <- rbind(df, curr_df)
     print(paste("Added", curr$name, "| Slot", i+j))
   }
 }
 df <- distinct(df, name, .keep_all = TRUE)
 
-## Hours filter
+## Category filter
+curr_category <- as.vector(df$categories)
+curr_category <- c("American", "Japanese")
+df <- filter(df, categories %in% curr_category)
 
 
 curr_rating <- 0
