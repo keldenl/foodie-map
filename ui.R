@@ -34,7 +34,9 @@ shinyUI(fluidPage(theme = "style.css",
        sliderInput("map.zoom", label = h3("Map Scope", style="color:pink"), 
                    min = 1,
                    max = 3,
-                   value = 2)
+                   value = 2),
+       selectInput("category", multiple = TRUE, label = h3("Select Category", style = "color:pink"), 
+                   choices = "")
     )
   )
 ))

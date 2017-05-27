@@ -16,7 +16,7 @@ library(plotly)
 
 # Changable Variables
 limit <- 50 # Unchanged
-total <- 200 # Total amount of restaurants you want to return (Max ~1000)
+total <- 50 # Total amount of restaurants you want to return (Max ~1000)
 
 loc <- "c800 occidental ave s, seattle, wa" # Location you're searching for
 long_lat <- as.numeric(geocode(loc))
@@ -49,14 +49,19 @@ for(j in seq(0, total-1, 50)) {
 }
 df <- distinct(df, name, .keep_all = TRUE)
 
-## Category filter
-curr_category <- as.vector(df$categories)
-curr_category <- c("American", "Japanese")
-df <- filter(df, categories %in% curr_category)
+getCategory <- function(){
+  category <- df %>% distinct(categories)
+  return(as.vector(category))
+}
 
+## Category filter
+# curr_category <- as.vector(df$categories)
+# curr_category <- c("American", "Japanese")
+# df <- filter(df, categories %in% curr_category)
+# 
 
 curr_rating <- 0
-## Rating filter 
+## Rating filter
 # df <- filter(df, rating >= 3)
 
 curr_price <- c('$', "$$")
@@ -73,13 +78,13 @@ map1 <- get_map(location = location, source = "google", zoom = mapNormal)
 # Make a map with restaurants as points on it
 maps <- ggmap(map1) +
   # Add restaurant markers
-  geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price, 
-                          x=long, y=lat), color="green") + 
+  geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price,
+                          x=long, y=lat), color="green") +
   geom_density2d(data=df, aes(color=rating, x=long, y=lat)) +
-  scale_fill_gradient(low = "green", high = "red", 
+  scale_fill_gradient(low = "green", high = "red",
                       guide = FALSE) +
   coord_fixed(1.3) +
-  
+
   # Labels
   labs(title="Restaurants near your location")
 maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)

@@ -11,11 +11,22 @@ shinyServer(function(input, output, session) {
   #  2) Its output type is a plot
 
   observeEvent(input$submitSearch, {
+    source("./scripts/mapLocation.R")
     updateTabsetPanel(session, inputId = "tabs", selected = "graph")
+    updateSelectInput(session, inputId = "category", choices = getCategory())
   })
   
   observeEvent(input$main, {
     updateTabsetPanel(session, inputId = "tabs", selected = "main")
   })
+  
+  # Set up all the widgets
+  output$open.now <- renderPrint({input$open.now})
+  output$min.rating <- renderPrint({input$min.rating})
+  output$price.range <- renderPrint({input$price.range})
+  output$map.zoom <- renderPrint({input$map.zoom})
+  
+  
+  
   
 })
