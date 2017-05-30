@@ -5,23 +5,23 @@ library(dplyr)
 
 ## Map-related Libraries
 library(maps)
-# install.packages("ggmap", type = "source")
-library(ggmap)
+library(ggmap) #install.packages("ggmap", type = "source")
 
 ## Plot-related Libraries
-# install.packages("ggplot2", type = "source")
-library(ggplot2)
+library(ggplot2) #install.packages("ggplot2", type = "source")
 library(plotly)
 
 # Changable Variables
 limit <- 50 # Unchanged
 total <- 200 # Total amount of restaurants you want to return (Max ~1000)
 
-loc <- "university way, seattle, wa" # Location you're searching for
+loc <- "pike's place street, seattle, wa" # Location you're searching for
 long_lat <- as.numeric(geocode(loc))
 loc <- revgeocode(long_lat, output="more") # View() to see more about the location
 zip <- loc$postal_code
 open_now <- FALSE
+
+#enerateGraph <- function(loc, )
 
 # df stores all the restaurant information
 df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, price=NULL,
@@ -74,21 +74,51 @@ mapZoom <- mapNormal
 location <- c(lon = long_lat[1], lat = long_lat[2])
 map1 <- get_map(location = location, source = "google", zoom = mapZoom)
 
-df$review_500 <- "> 500"
-df$review_500[df$rev_count <= 500] <- NA
 # Make a map with restaurants as points on it
+## PRICE
 maps <- ggmap(map1) +
   # Add restaurant markers
-  geom_point(data=subset(df,rev_count <= 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
-                          x=long, y=lat, color=((subset(df,rev_count <= 500)$rev_count)), size=2)) +
-  geom_point(data=subset(df,rev_count > 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
-                                                   x=long, y=lat, fill=review_500, size=2)) +
+  geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price, 
+                          x=long, y=lat, color=as.numeric(price)), size=3, alpha=.7) +
   scale_colour_gradient(low="yellow",high="red") +
   coord_fixed(1.3) +
 
   # Labels
   labs(title="Restaurants near your location")
 maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
+
+## RATINGS
+# maps <- ggmap(map1) +
+#   # Add restaurant markers
+#   geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price, 
+#                           x=long, y=lat, color=rating, size=1)) +
+#   scale_colour_gradient(low="yellow",high="red") +
+#   coord_fixed(1.3) +
+#   
+#   # Labels
+#   labs(title="Restaurants near your location")
+# maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
+
+
+
+## REVIEWS
+# df$review_500 <- "> 500"
+# df$review_500[df$rev_count <= 500] <- NA
+# maps <- ggmap(map1) +
+#   # Add restaurant markers
+#   geom_point(data=subset(df,rev_count <= 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
+#                                                    x=long, y=lat, color=((subset(df,rev_count <= 500)$rev_count)), size=2)) +
+#   geom_point(data=subset(df,rev_count > 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
+#                                                   x=long, y=lat, fill=review_500, size=2)) +
+#   scale_colour_gradient(low="yellow",high="red") +
+#   coord_fixed(1.3) +
+#   
+#   # Labels
+#   labs(title="Restaurants near your location")
+# maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
+
+
+
 
 # Check out the map!
 maps
