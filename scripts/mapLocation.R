@@ -4,7 +4,6 @@ library(rjson)
 library(dplyr)
 
 ## Map-related Libraries
-library(OpenStreetMap)
 library(maps)
 # install.packages("ggmap", type = "source")
 library(ggmap)
@@ -16,7 +15,7 @@ library(plotly)
 
 # Changable Variables
 limit <- 50 # Unchanged
-total <- 500 # Total amount of restaurants you want to return (Max ~1000)
+total <- 200 # Total amount of restaurants you want to return (Max ~1000)
 
 loc <- "university way, seattle, wa" # Location you're searching for
 long_lat <- as.numeric(geocode(loc))

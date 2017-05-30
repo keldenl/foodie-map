@@ -36,7 +36,10 @@ shinyUI(fluidPage(theme = "style.css",
                    max = 3,
                    value = 2),
        selectInput("category", multiple = TRUE, label = h3("Select Category", style = "color:pink"), 
-                   choices = "")
-    )
+                   choices = ""),
+       sliderInput("num.restaurants", label = h3("Number of Restaurants to Show on the Page", style="color:pink"), 
+                   min = 50,
+                   max = 1000,
+                   value = 200)
   )
-))
+)))
