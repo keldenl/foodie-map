@@ -15,7 +15,7 @@ library(plotly)
 generateGraph <- function(location) {
   # Changable Variables
   limit <- 50 # Unchanged
-  total <- 200 # Total amount of restaurants you want to return (Max ~1000)
+  total <- 50 # Total amount of restaurants you want to return (Max ~1000)
   
   loc <- location #"pike's place street, seattle, wa" # Location you're searching for
   long_lat <- as.numeric(geocode(loc))
@@ -38,12 +38,13 @@ generateGraph <- function(location) {
     for (i in 1:limit) {
       curr <- data$businesses[[i]]
       if(is.null(curr$price)) { curr$price <- NA}
-      print(curr$categories[[1]]$title)
+      #print(curr$categories[[1]]$title)
       curr_df <- data.frame(name=curr$name, id=curr$id, lat=curr$coordinates$latitude, long=curr$coordinates$longitude, 
                             loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, price=curr$price,
                             rev_count=curr$review_count, img=curr$image_url, url=curr$url, categories=curr$categories[[1]]$title)
       df <- rbind(df, curr_df)
-      print(paste("Added", curr$name, "| Slot", i+j))
+      #print(paste("Added", curr$name, "| Slot", i+j))
+      print(paste0(i/(total)*100, "% done."))
     }
   }
   df <- distinct(df, name, .keep_all = TRUE)
@@ -77,10 +78,18 @@ generateGraph <- function(location) {
                             x=long, y=lat, color=as.numeric(price)), size=3, alpha=.7) +
     scale_colour_gradient(low="yellow",high="red") +
     coord_fixed(1.3) +
-    
-    # Labels
-    labs(title="Restaurants near your location")
-  maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank(),
+          legend.background = element_rect(fill="rgba(0, 0, 0, 0"),
+          legend.title = element_text(color="white"),
+          legend.text = element_text(color="white")) +
+          labs(color="Test")
+  maps <- ggplotly(maps, tooltip = c("name
+                                     ", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 700)
   
   ## RATINGS
   # maps <- ggmap(map1) +

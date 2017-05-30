@@ -21,39 +21,43 @@ shinyUI(fluidPage(theme = "style.css",
       )
     ),
     tabPanel(title="Your Heatmap", value="graph",
+       actionButton("main", "Go back to main"),
        plotlyOutput("graph"),
        hr(),
        
        fluidRow(
-         
-         column(3,
-           actionButton("main", "Go back to main"),
-           selectInput("heatmap.type", multiple = FALSE, label = h3("Heatmap", style = "color:pink"), 
-                       choices = list("Price" = "price", "Review counts" = "review.counts", "Rating" = "rating"),
-                       selected = "rating"),
-           checkboxInput("open.now", 
-                         label = h4("Open Now", style="color:pink"),
-                         value = FALSE),
-           numericInput("min.rating", 
-                        label = h3("Minimum Rating (1 ~ 5)", style = "color:pink"), 
-                        value = 1),
-           checkboxGroupInput("price.range", label = h3("Price Range", style="color:pink"), 
-                              choices = list("$" = 1, "$$" = 2, "$$$" = 3, "$$$$" = 4),
-                              selected = c(1,2,3,4))
-         ),
-         
-         column(4, offset = 1,
-           sliderInput("map.zoom", label = h3("Map Scope", style="color:pink"), 
-                       min = 1,
-                       max = 3,
-                       value = 2),
-           selectInput("category", multiple = TRUE, label = h3("Select Category", style = "color:pink"), 
-                       choices = ""),
-           sliderInput("num.restaurants", label = h3("Number of Restaurants to Show on the Page", style="color:pink"), 
+         column(4,
+           sliderInput("map.zoom", label = p("Map Scope"), 
+                        min = 1,
+                        max = 3,
+                        value = 2),
+           sliderInput("num.restaurants", label = p("Number of Restaurants to Show on the Page"), 
                        min = 50,
                        max = 1000,
-                       value = 200)
-         )
+                       value = 200),
+           checkboxInput("open.now", 
+                         label = p("Open Now"),
+                         value = FALSE)
+         ),
+         
+         column(4,
+           selectInput("heatmap.type", multiple = FALSE, label = p("Heatmap"), 
+                            choices = list("Price" = "price", "Review count" = "review.counts", "Rating" = "rating"),
+                            selected = "rating"),
+           selectInput("category", multiple = TRUE, label = p("Select Category"), 
+                       choices = ""),
+           numericInput("min.rating", 
+                        label = p("Minimum Rating (1 ~ 5)"), 
+                        value = 1)
+         ),
+         
+         column(4,
+            checkboxGroupInput("price.range", label = p("Price Range"), 
+                                   choices = list("$" = 1, "$$" = 2, "$$$" = 3, "$$$$" = 4),
+                                   selected = c(1,2,3,4)),
+            
+            actionButton("filter", "FILTER")
+        )
        )
   )
 )))
