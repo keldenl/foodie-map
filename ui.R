@@ -22,6 +22,7 @@ shinyUI(fluidPage(theme = "style.css",
     ),
     tabPanel(title="Your Heatmap", value="graph",
        actionButton("main", "Go back to main"),
+       # variable names are random.. need to be changed based on the actual function!!!!!
        selectInput("heatmap.type", multiple = FALSE, label = h3("Heatmap", style = "color:pink"), 
                    choices = list("Price" = "price", "Review counts" = "review.counts", "Rating" = "rating"),
                    selected = "rating"),
