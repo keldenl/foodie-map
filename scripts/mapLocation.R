@@ -111,13 +111,6 @@ generateGraph <- function(location) {
   #   # Labels
   #   labs(title="Restaurants near your location")
   # maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
-  
-  
-  
-  
-  # Check out the map!
-  maps
-  
 }
 
 getCategory <- function(){

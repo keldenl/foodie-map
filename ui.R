@@ -21,32 +21,39 @@ shinyUI(fluidPage(theme = "style.css",
       )
     ),
     tabPanel(title="Your Heatmap", value="graph",
-       actionButton("main", "Go back to main"),
-       # variable names are random.. need to be changed based on the actual function!!!!!
-       selectInput("heatmap.type", multiple = FALSE, label = h3("Heatmap", style = "color:pink"), 
-                   choices = list("Price" = "price", "Review counts" = "review.counts", "Rating" = "rating"),
-                   selected = "rating"),
-       checkboxInput("open.now", 
-                     label = h4("Open Now", style="color:pink"),
-                     value = FALSE),
-       numericInput("min.rating", 
-                    label = h3("Minimum Rating (1 ~ 5)", style = "color:pink"), 
-                    value = 1),
-       checkboxGroupInput("price.range", label = h3("Price Range", style="color:pink"), 
-                          choices = list("$" = 1, "$$" = 2, "$$$" = 3, "$$$$" = 4),
-                          selected = c(1,2,3,4)),
-       sliderInput("map.zoom", label = h3("Map Scope", style="color:pink"), 
-                   min = 1,
-                   max = 3,
-                   value = 2),
-       selectInput("category", multiple = TRUE, label = h3("Select Category", style = "color:pink"), 
-                   choices = ""),
-       sliderInput("num.restaurants", label = h3("Number of Restaurants to Show on the Page", style="color:pink"), 
-                   min = 50,
-                   max = 1000,
-                   value = 200)
-  ),
-  mainPanel( 
-    plotlyOutput("graph")
+       plotlyOutput("graph"),
+       hr(),
+       
+       fluidRow(
+         
+         column(3,
+           actionButton("main", "Go back to main"),
+           selectInput("heatmap.type", multiple = FALSE, label = h3("Heatmap", style = "color:pink"), 
+                       choices = list("Price" = "price", "Review counts" = "review.counts", "Rating" = "rating"),
+                       selected = "rating"),
+           checkboxInput("open.now", 
+                         label = h4("Open Now", style="color:pink"),
+                         value = FALSE),
+           numericInput("min.rating", 
+                        label = h3("Minimum Rating (1 ~ 5)", style = "color:pink"), 
+                        value = 1),
+           checkboxGroupInput("price.range", label = h3("Price Range", style="color:pink"), 
+                              choices = list("$" = 1, "$$" = 2, "$$$" = 3, "$$$$" = 4),
+                              selected = c(1,2,3,4))
+         ),
+         
+         column(4, offset = 1,
+           sliderInput("map.zoom", label = h3("Map Scope", style="color:pink"), 
+                       min = 1,
+                       max = 3,
+                       value = 2),
+           selectInput("category", multiple = TRUE, label = h3("Select Category", style = "color:pink"), 
+                       choices = ""),
+           sliderInput("num.restaurants", label = h3("Number of Restaurants to Show on the Page", style="color:pink"), 
+                       min = 50,
+                       max = 1000,
+                       value = 200)
+         )
+       )
   )
 )))
