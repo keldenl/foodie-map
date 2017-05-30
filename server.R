@@ -12,6 +12,9 @@ shinyServer(function(input, output, session) {
 
   observeEvent(input$submitSearch, {
     source("./scripts/mapLocation.R")
+    output$graph <- renderPlotly({
+      generateGraph(input$loc)
+    })
     updateTabsetPanel(session, inputId = "tabs", selected = "graph")
     updateSelectInput(session, inputId = "category", choices = getCategory())
   })

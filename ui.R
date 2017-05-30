@@ -27,10 +27,10 @@ shinyUI(fluidPage(theme = "style.css",
                      value = FALSE),
        numericInput("min.rating", 
                     label = h3("Minimum Rating (1 ~ 5)", style = "color:pink"), 
-                    value = 3),
+                    value = 1),
        checkboxGroupInput("price.range", label = h3("Price Range", style="color:pink"), 
                           choices = list("$" = 1, "$$" = 2, "$$$" = 3, "$$$$" = 4),
-                          selected = 2),
+                          selected = c(1,2,3,4)),
        sliderInput("map.zoom", label = h3("Map Scope", style="color:pink"), 
                    min = 1,
                    max = 3,
@@ -41,5 +41,8 @@ shinyUI(fluidPage(theme = "style.css",
                    min = 50,
                    max = 1000,
                    value = 200)
+  ),
+  mainPanel( 
+    plotlyOutput("graph")
   )
 )))

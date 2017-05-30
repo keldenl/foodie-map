@@ -11,114 +11,116 @@ library(ggmap) #install.packages("ggmap", type = "source")
 library(ggplot2) #install.packages("ggplot2", type = "source")
 library(plotly)
 
-# Changable Variables
-limit <- 50 # Unchanged
-total <- 200 # Total amount of restaurants you want to return (Max ~1000)
 
-loc <- "pike's place street, seattle, wa" # Location you're searching for
-long_lat <- as.numeric(geocode(loc))
-loc <- revgeocode(long_lat, output="more") # View() to see more about the location
-zip <- loc$postal_code
-open_now <- FALSE
-
-#enerateGraph <- function(loc, )
-
-# df stores all the restaurant information
-df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, price=NULL,
-                 rev_count=NULL, img=NULL, url=NULL, categories=NULL)
-
-# Loop through and add restaurants to the dataframe df
-for(j in seq(0, total-1, 50)) {
-  offset <- j # Offset to the next set of 50 businesses
-  query <- paste0("https://api.yelp.com/v3/businesses/search?location=", zip, "&limit=", limit,
-                  "&offset=", offset, "&term=restaurant", "&open_now=", open_now)
-  data <- GET(url=query, add_headers(Authorization="bearer O8RZ1gWMOz120LusXeF_s_HhkLlwLQBrd9_SLV9r9ltR8zJdHY9g_mFDtZGyX7EMa2XkHFTRbFDo_8ZhRxlWX1apsp-4gSW5U0hlIOnuwQceLTlmQCKX99nnDAMmWXYx"))
-  data <- fromJSON(content(data,type="text"))
+generateGraph <- function(location) {
+  # Changable Variables
+  limit <- 50 # Unchanged
+  total <- 200 # Total amount of restaurants you want to return (Max ~1000)
   
-  for (i in 1:limit) {
-    curr <- data$businesses[[i]]
-    if(is.null(curr$price)) { curr$price <- NA}
-    print(curr$categories[[1]]$title)
-    curr_df <- data.frame(name=curr$name, id=curr$id, lat=curr$coordinates$latitude, long=curr$coordinates$longitude, 
-                          loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, price=curr$price,
-                          rev_count=curr$review_count, img=curr$image_url, url=curr$url, categories=curr$categories[[1]]$title)
-    df <- rbind(df, curr_df)
-    print(paste("Added", curr$name, "| Slot", i+j))
+  loc <- location #"pike's place street, seattle, wa" # Location you're searching for
+  long_lat <- as.numeric(geocode(loc))
+  loc <- revgeocode(long_lat, output="more") # View() to see more about the location
+  zip <- loc$postal_code
+  open_now <- FALSE
+  
+  # df stores all the restaurant information
+  df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, price=NULL,
+                   rev_count=NULL, img=NULL, url=NULL, categories=NULL)
+  
+  # Loop through and add restaurants to the dataframe df
+  for(j in seq(0, total-1, 50)) {
+    offset <- j # Offset to the next set of 50 businesses
+    query <- paste0("https://api.yelp.com/v3/businesses/search?location=", zip, "&limit=", limit,
+                    "&offset=", offset, "&term=restaurant", "&open_now=", open_now)
+    data <- GET(url=query, add_headers(Authorization="bearer O8RZ1gWMOz120LusXeF_s_HhkLlwLQBrd9_SLV9r9ltR8zJdHY9g_mFDtZGyX7EMa2XkHFTRbFDo_8ZhRxlWX1apsp-4gSW5U0hlIOnuwQceLTlmQCKX99nnDAMmWXYx"))
+    data <- fromJSON(content(data,type="text"))
+    
+    for (i in 1:limit) {
+      curr <- data$businesses[[i]]
+      if(is.null(curr$price)) { curr$price <- NA}
+      print(curr$categories[[1]]$title)
+      curr_df <- data.frame(name=curr$name, id=curr$id, lat=curr$coordinates$latitude, long=curr$coordinates$longitude, 
+                            loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, price=curr$price,
+                            rev_count=curr$review_count, img=curr$image_url, url=curr$url, categories=curr$categories[[1]]$title)
+      df <- rbind(df, curr_df)
+      print(paste("Added", curr$name, "| Slot", i+j))
+    }
   }
+  df <- distinct(df, name, .keep_all = TRUE)
+  
+  ## Category filter
+  # curr_category <- as.vector(df$categories)
+  # curr_category <- c("American", "Japanese")
+  # df <- filter(df, categories %in% curr_category)
+  # 
+  
+  curr_rating <- 0
+  ## Rating filter
+  # df <- filter(df, rating >= 3)
+  
+  curr_price <- c('$', "$$")
+  ## Price filter
+  # df <- filter(df, price %in% curr_price)
+  mapNormal <- 15
+  mapIn <- mapNormal - 1
+  mapOut <- mapNormal + 1
+  mapZoom <- mapNormal
+  # Get a map for the location entered
+  location <- c(lon = long_lat[1], lat = long_lat[2])
+  map1 <- get_map(location = location, source = "google", zoom = mapZoom)
+  
+  # Make a map with restaurants as points on it
+  ## PRICE
+  maps <- ggmap(map1) +
+    # Add restaurant markers
+    geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price, 
+                            x=long, y=lat, color=as.numeric(price)), size=3, alpha=.7) +
+    scale_colour_gradient(low="yellow",high="red") +
+    coord_fixed(1.3) +
+    
+    # Labels
+    labs(title="Restaurants near your location")
+  maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
+  
+  ## RATINGS
+  # maps <- ggmap(map1) +
+  #   # Add restaurant markers
+  #   geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price, 
+  #                           x=long, y=lat, color=rating, size=1)) +
+  #   scale_colour_gradient(low="yellow",high="red") +
+  #   coord_fixed(1.3) +
+  #   
+  #   # Labels
+  #   labs(title="Restaurants near your location")
+  # maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
+  
+  
+  
+  ## REVIEWS
+  # df$review_500 <- "> 500"
+  # df$review_500[df$rev_count <= 500] <- NA
+  # maps <- ggmap(map1) +
+  #   # Add restaurant markers
+  #   geom_point(data=subset(df,rev_count <= 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
+  #                                                    x=long, y=lat, color=((subset(df,rev_count <= 500)$rev_count)), size=2)) +
+  #   geom_point(data=subset(df,rev_count > 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
+  #                                                   x=long, y=lat, fill=review_500, size=2)) +
+  #   scale_colour_gradient(low="yellow",high="red") +
+  #   coord_fixed(1.3) +
+  #   
+  #   # Labels
+  #   labs(title="Restaurants near your location")
+  # maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
+  
+  
+  
+  
+  # Check out the map!
+  maps
+  
 }
-df <- distinct(df, name, .keep_all = TRUE)
 
 getCategory <- function(){
   category <- df %>% distinct(categories)
   return(as.vector(category))
 }
-
-## Category filter
-# curr_category <- as.vector(df$categories)
-# curr_category <- c("American", "Japanese")
-# df <- filter(df, categories %in% curr_category)
-# 
-
-curr_rating <- 0
-## Rating filter
-# df <- filter(df, rating >= 3)
-
-curr_price <- c('$', "$$")
-## Price filter
-# df <- filter(df, price %in% curr_price)
-mapNormal <- 15
-mapIn <- mapNormal - 1
-mapOut <- mapNormal + 1
-mapZoom <- mapNormal
-# Get a map for the location entered
-location <- c(lon = long_lat[1], lat = long_lat[2])
-map1 <- get_map(location = location, source = "google", zoom = mapZoom)
-
-# Make a map with restaurants as points on it
-## PRICE
-maps <- ggmap(map1) +
-  # Add restaurant markers
-  geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price, 
-                          x=long, y=lat, color=as.numeric(price)), size=3, alpha=.7) +
-  scale_colour_gradient(low="yellow",high="red") +
-  coord_fixed(1.3) +
-
-  # Labels
-  labs(title="Restaurants near your location")
-maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
-
-## RATINGS
-# maps <- ggmap(map1) +
-#   # Add restaurant markers
-#   geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price, 
-#                           x=long, y=lat, color=rating, size=1)) +
-#   scale_colour_gradient(low="yellow",high="red") +
-#   coord_fixed(1.3) +
-#   
-#   # Labels
-#   labs(title="Restaurants near your location")
-# maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
-
-
-
-## REVIEWS
-# df$review_500 <- "> 500"
-# df$review_500[df$rev_count <= 500] <- NA
-# maps <- ggmap(map1) +
-#   # Add restaurant markers
-#   geom_point(data=subset(df,rev_count <= 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
-#                                                    x=long, y=lat, color=((subset(df,rev_count <= 500)$rev_count)), size=2)) +
-#   geom_point(data=subset(df,rev_count > 500), aes(name=name, rating=rating, reviews=rev_count, price=price, 
-#                                                   x=long, y=lat, fill=review_500, size=2)) +
-#   scale_colour_gradient(low="yellow",high="red") +
-#   coord_fixed(1.3) +
-#   
-#   # Labels
-#   labs(title="Restaurants near your location")
-# maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
-
-
-
-
-# Check out the map!
-maps
