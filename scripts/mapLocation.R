@@ -15,9 +15,9 @@ library(plotly)
 prog <- 0
 limit <- 50 # Unchanged
 
-generateGraph <- function(location) {
+generateGraph <- function(tot_res, location, scope, open, cat, min_rat, price_range) {
   # Changable Variables
-  total <- 500 # Total amount of restaurants you want to return (Max ~1000)
+  total <- tot_res # Total amount of restaurants you want to return (Max ~1000)
   
   loc <- location #"pike's place street, seattle, wa" # Location you're searching for
   long_lat <- as.numeric(geocode(loc))
