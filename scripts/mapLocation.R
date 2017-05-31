@@ -28,13 +28,14 @@ generateGraph <- function(tot_res, location, scope, open, cat, min_rat, price_ra
   df <- returnDf(zip, open_now, total)
 
   # Category filter
-  df <- filter(df, categories %in% cat)
+  # df <- filter(df, categories %in% cat) ## default selects everything
 
   # Rating filter
   df <- filter(df, rating >= min_rat)
   
-  ## Price filter
-  df <- filter(df, price %in% price_range)
+  # Price filter
+  print(price_range)
+  df <- filter(df, as.numeric(price) %in% price_range)
   
   mapNormal <- 15
   mapZoom <- mapNormal - (scope - 2)
@@ -100,7 +101,6 @@ getProg <- function() {
 
 getCategory <- function(location, total){
   # Changable Variables
-  
   loc <- location #"pike's place street, seattle, wa" # Location you're searching for
   long_lat <- as.numeric(geocode(loc))
   loc <- revgeocode(long_lat, output="more") # View() to see more about the location

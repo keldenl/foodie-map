@@ -4,7 +4,8 @@ shinyServer(function(input, output, session) {
   observeEvent(input$submitSearch, {
     source("./scripts/mapLocation.R")
     output$graph <- renderPlotly({
-      generateGraph(input$loc) %>% 
+      generateGraph(input$num.restaurants, input$loc, input$map.zoom, input$open.now,
+                    input$category, input$min.rating, input$price.range) %>% 
         layout(plot_bgcolor='rgba(0, 0, 0, 0)') %>% 
         layout(paper_bgcolor='rgba(0, 0, 0, 0)')
     })
@@ -16,6 +17,13 @@ shinyServer(function(input, output, session) {
   
   observeEvent(input$main, {
     updateTabsetPanel(session, inputId = "tabs", selected = "main")
+  })
+  
+  observeEvent(input$filter, {
+    generateGraph(input$num.restaurants, input$loc, input$map.zoom, input$open.now,
+                  input$category, input$min.rating, input$price.range) %>% 
+      layout(plot_bgcolor='rgba(0, 0, 0, 0)') %>% 
+      layout(paper_bgcolor='rgba(0, 0, 0, 0)')
   })
   
   # Set up all the widgets
