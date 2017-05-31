@@ -1,25 +1,17 @@
 library(shiny)
 
-# Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
-  
-  # Expression that generates a histogram. The expression is
-  # wrapped in a call to renderPlot to indicate that:
-  #
-  #  1) It is "reactive" and therefore should be automatically
-  #     re-executed when inputs change
-  #  2) Its output type is a plot
-
   observeEvent(input$submitSearch, {
     source("./scripts/mapLocation.R")
     output$graph <- renderPlotly({
       generateGraph(input$loc) %>% 
-        
         layout(plot_bgcolor='rgba(0, 0, 0, 0)') %>% 
         layout(paper_bgcolor='rgba(0, 0, 0, 0)')
     })
+    
     updateTabsetPanel(session, inputId = "tabs", selected = "graph")
-    updateSelectInput(session, inputId = "category", choices = getCategory())
+    updateSelectInput(session, inputId = "category", 
+                      choices = getCategory(input$loc, input$num.restaurants))
   })
   
   observeEvent(input$main, {

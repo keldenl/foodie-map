@@ -1,5 +1,6 @@
 library(shiny)
 
+source("./scripts/mapLocation.R")
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(theme = "style.css",
   tags$head(
@@ -8,6 +9,8 @@ shinyUI(fluidPage(theme = "style.css",
     "))
   ),
   # Application title
+  conditionalPanel(condition="$('html').hasClass('shiny-busy')",
+                   tags$div(paste("Loading Graph...", getProg()),id="loadmessage")),
   navbarPage("Tabs", id="tabs",
     tabPanel(title="Foodie Map", value="main",
       
@@ -22,7 +25,7 @@ shinyUI(fluidPage(theme = "style.css",
     ),
     tabPanel(title="Your Heatmap", value="graph",
        actionButton("main", "Go back to main"),
-       plotlyOutput("graph"),
+       plotlyOutput("graph", height = "560px"),
        hr(),
        
        fluidRow(

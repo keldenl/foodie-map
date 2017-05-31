@@ -11,11 +11,13 @@ library(ggmap) #install.packages("ggmap", type = "source")
 library(ggplot2) #install.packages("ggplot2", type = "source")
 library(plotly)
 
+# Set Variables
+prog <- 0
+limit <- 50 # Unchanged
 
 generateGraph <- function(location) {
   # Changable Variables
-  limit <- 50 # Unchanged
-  total <- 50 # Total amount of restaurants you want to return (Max ~1000)
+  total <- 500 # Total amount of restaurants you want to return (Max ~1000)
   
   loc <- location #"pike's place street, seattle, wa" # Location you're searching for
   long_lat <- as.numeric(geocode(loc))
@@ -23,32 +25,8 @@ generateGraph <- function(location) {
   zip <- loc$postal_code
   open_now <- FALSE
   
-  # df stores all the restaurant information
-  df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, price=NULL,
-                   rev_count=NULL, img=NULL, url=NULL, categories=NULL)
-  
-  # Loop through and add restaurants to the dataframe df
-  for(j in seq(0, total-1, 50)) {
-    offset <- j # Offset to the next set of 50 businesses
-    query <- paste0("https://api.yelp.com/v3/businesses/search?location=", zip, "&limit=", limit,
-                    "&offset=", offset, "&term=restaurant", "&open_now=", open_now)
-    data <- GET(url=query, add_headers(Authorization="bearer O8RZ1gWMOz120LusXeF_s_HhkLlwLQBrd9_SLV9r9ltR8zJdHY9g_mFDtZGyX7EMa2XkHFTRbFDo_8ZhRxlWX1apsp-4gSW5U0hlIOnuwQceLTlmQCKX99nnDAMmWXYx"))
-    data <- fromJSON(content(data,type="text"))
-    
-    for (i in 1:limit) {
-      curr <- data$businesses[[i]]
-      if(is.null(curr$price)) { curr$price <- NA}
-      #print(curr$categories[[1]]$title)
-      curr_df <- data.frame(name=curr$name, id=curr$id, lat=curr$coordinates$latitude, long=curr$coordinates$longitude, 
-                            loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, price=curr$price,
-                            rev_count=curr$review_count, img=curr$image_url, url=curr$url, categories=curr$categories[[1]]$title)
-      df <- rbind(df, curr_df)
-      #print(paste("Added", curr$name, "| Slot", i+j))
-      print(paste0(i/(total)*100, "% done."))
-    }
-  }
-  df <- distinct(df, name, .keep_all = TRUE)
-  
+  df <- returnDf(zip, open_now, total)
+
   ## Category filter
   # curr_category <- as.vector(df$categories)
   # curr_category <- c("American", "Japanese")
@@ -77,7 +55,6 @@ generateGraph <- function(location) {
     geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price, 
                             x=long, y=lat, color=as.numeric(price)), size=3, alpha=.7) +
     scale_colour_gradient(low="yellow",high="red") +
-    coord_fixed(1.3) +
     theme(axis.title.x=element_blank(),
           axis.text.x=element_blank(),
           axis.ticks.x=element_blank(),
@@ -88,8 +65,8 @@ generateGraph <- function(location) {
           legend.title = element_text(color="white"),
           legend.text = element_text(color="white")) +
           labs(color="Test")
-  maps <- ggplotly(maps, tooltip = c("name
-                                     ", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 700)
+  maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), 
+                   dynamicTicks = FALSE, width = 700, height = 580)
   
   ## RATINGS
   # maps <- ggmap(map1) +
@@ -120,9 +97,53 @@ generateGraph <- function(location) {
   #   # Labels
   #   labs(title="Restaurants near your location")
   # maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), dynamicTicks = FALSE, width = 500)
+  return (maps)
 }
 
-getCategory <- function(){
+getProg <- function() {
+  return (prog)
+}
+
+getCategory <- function(location, total){
+  # Changable Variables
+  
+  loc <- location #"pike's place street, seattle, wa" # Location you're searching for
+  long_lat <- as.numeric(geocode(loc))
+  loc <- revgeocode(long_lat, output="more") # View() to see more about the location
+  zip <- loc$postal_code
+  open_now <- FALSE
+  
+  df <- returnDf(zip, open_now, total)
   category <- df %>% distinct(categories)
   return(as.vector(category))
 }
+
+
+returnDf <- function(zip, open_now, total) {
+  # df stores all the restaurant information
+  df <- data.frame(name=NULL, id=NULL, lat=NULL, long=NULL, loc=NULL, phone=NULL, rating=NULL, price=NULL,
+                   rev_count=NULL, img=NULL, url=NULL, categories=NULL)
+  
+  # Loop through and add restaurants to the dataframe df
+  for(j in seq(0, total-1, 50)) {
+    offset <- j # Offset to the next set of 50 businesses
+    query <- paste0("https://api.yelp.com/v3/businesses/search?location=", zip, "&limit=", limit,
+                    "&offset=", offset, "&term=restaurant", "&open_now=", open_now)
+    data <- GET(url=query, add_headers(Authorization="bearer O8RZ1gWMOz120LusXeF_s_HhkLlwLQBrd9_SLV9r9ltR8zJdHY9g_mFDtZGyX7EMa2XkHFTRbFDo_8ZhRxlWX1apsp-4gSW5U0hlIOnuwQceLTlmQCKX99nnDAMmWXYx"))
+    data <- fromJSON(content(data,type="text"))
+    
+    for (i in 1:limit) {
+      curr <- data$businesses[[i]]
+      if(is.null(curr$price)) { curr$price <- NA}
+      curr_df <- data.frame(name=curr$name, id=curr$id, lat=curr$coordinates$latitude, long=curr$coordinates$longitude, 
+                            loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, price=curr$price,
+                            rev_count=curr$review_count, img=curr$image_url, url=curr$url, categories=curr$categories[[1]]$title)
+      df <- rbind(df, curr_df)
+      prog <- (i+j)/(total)*100
+      print(paste0(prog, "%"))
+    }
+  }
+  df <- distinct(df, name, .keep_all = TRUE)
+  return (df)
+}
+
