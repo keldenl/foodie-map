@@ -60,7 +60,6 @@ shinyUI(fluidPage(theme = "style.css",
                 checkboxInput("open.now", 
                               label = p("Only show currently opened"),
                               value = FALSE),
-                
                 actionButton("filter", "Filter"),
                 actionButton("main", "Search again")
          )
