@@ -10,7 +10,7 @@ shinyUI(fluidPage(theme = "style.css",
   ),
   # Application title
   conditionalPanel(condition="$('html').hasClass('shiny-busy')",
-                   tags$div(paste("Loading Graph...", getProg()),id="loadmessage")),
+                   tags$div(paste("Loading graph, please wait..."))),
   navbarPage("Tabs", id="tabs",
     tabPanel(title="Foodie Map", value="main",
       

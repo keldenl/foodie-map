@@ -12,8 +12,8 @@ library(ggplot2) #install.packages("ggplot2", type = "source")
 library(plotly)
 
 # Set Variables
-prog <- 0
-limit <- 50 # Unchanged
+#prog <- 0
+#limit <- 50 # Unchanged
 
 generateGraph <- function(tot_res, location, scope, open, cat, min_rat, price_range) {
   # Changable Variables
@@ -133,8 +133,8 @@ returnDf <- function(zip, open_now, total) {
                             loc=curr$location$display_address, phone=curr$phone, rating=curr$rating, price=curr$price,
                             rev_count=curr$review_count, img=curr$image_url, url=curr$url, categories=curr$categories[[1]]$title)
       df <- rbind(df, curr_df)
-      prog <- (i+j)/(total)*100
-      print(paste0(prog, "%"))
+      #prog <- (i+j)/(total)*100
+      #print(paste0(prog, "%"))
     }
   }
   df <- distinct(df, name, .keep_all = TRUE)
