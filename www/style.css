@@ -90,6 +90,10 @@ h1 {
   }
 }
 
+.row {
+  background-color: white;
+}
+
 #loadmessage {
              position: fixed;
              top: 0px;
