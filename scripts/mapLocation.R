@@ -23,27 +23,21 @@ generateGraph <- function(tot_res, location, scope, open, cat, min_rat, price_ra
   long_lat <- as.numeric(geocode(loc))
   loc <- revgeocode(long_lat, output="more") # View() to see more about the location
   zip <- loc$postal_code
-  open_now <- FALSE
+  open_now <- open
   
   df <- returnDf(zip, open_now, total)
 
-  ## Category filter
-  # curr_category <- as.vector(df$categories)
-  # curr_category <- c("American", "Japanese")
-  # df <- filter(df, categories %in% curr_category)
-  # 
+  # Category filter
+  df <- filter(df, categories %in% cat)
+
+  # Rating filter
+  df <- filter(df, rating >= min_rat)
   
-  curr_rating <- 0
-  ## Rating filter
-  # df <- filter(df, rating >= 3)
-  
-  curr_price <- c('$', "$$")
   ## Price filter
-  # df <- filter(df, price %in% curr_price)
+  df <- filter(df, price %in% price_range)
+  
   mapNormal <- 15
-  mapIn <- mapNormal - 1
-  mapOut <- mapNormal + 1
-  mapZoom <- mapNormal
+  mapZoom <- mapNormal - (scope - 2)
   # Get a map for the location entered
   location <- c(lon = long_lat[1], lat = long_lat[2])
   map1 <- get_map(location = location, source = "google", zoom = mapZoom)
