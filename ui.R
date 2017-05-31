@@ -26,7 +26,6 @@ shinyUI(fluidPage(theme = "style.css",
     tabPanel(title="Your Heatmap", value="graph",
        plotlyOutput("graph", height = "560px"),
        hr(),
-       
        fluidRow(
          column(7,
             h4("Dynamic Filters"),
