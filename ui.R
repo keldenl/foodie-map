@@ -18,7 +18,7 @@ shinyUI(fluidPage(theme = "style.css",
       # Sidebar with a slider input for the number of bi
       # Show a plot of the generated distribution
       mainPanel(
-        div(id="initSearch", textInput("loc", label = NULL, placeholder = "Enter your zip code or location"),
+        div(id="initSearch", textInput("loc", label = NULL, placeholder = "Enter your location"),
             div(id="buttons", actionButton("submitSearch", "Search Map"), actionButton("logIn", "Surprise Me"))
         )
       )
@@ -59,7 +59,7 @@ shinyUI(fluidPage(theme = "style.css",
                 checkboxInput("open.now", 
                               label = p("Only show currently opened"),
                               value = FALSE),
-                actionButton("filter", "Filter"),
+                actionButton("filter", "Update graph"),
                 actionButton("main", "Search again")
          )
          
