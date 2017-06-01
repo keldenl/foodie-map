@@ -2,6 +2,10 @@ library(shiny)
 source("./scripts/mapLocation.R")
 
 shinyServer(function(input, output, session) {
+  observeEvent(input$surprise, {
+    updateTextInput(session, inputId = "loc", value = "University way, Seattle WA")
+  })
+  
   # Initial search function 
   observeEvent(input$submitSearch, {
     # Process Address Entered
@@ -10,6 +14,7 @@ shinyServer(function(input, output, session) {
     zip <- loc$postal_code
     
     df <- returnDf(zip, input$open.now, input$num.restaurants)
+    output$returnAmount <- renderText({ paste("Returned", nrow(df), "restaurants in", input$loc) })
     
     # Graph
     output$graph <- renderPlotly({
@@ -36,14 +41,13 @@ shinyServer(function(input, output, session) {
     zip <- loc$postal_code
     
     df <- returnDf(zip, input$open.now, input$num.restaurants)
-    print(paste("Returned", nrow(df), "restaurants."))
+    output$returnAmount <- renderText({paste("Returned", nrow(df), "restaurants in", input$loc)})
     # Graph
     output$graph <- renderPlotly({
       generateGraph(df, long_lat, input$map.zoom, input$category, input$min.rating, 
                     input$price.range, input$heatmap.type) %>% 
-        layout(plot_bgcolor='rgba(0, 0, 0, 1)') %>% 
-        layout(paper_bgcolor='rgba(0, 0, 0, 1)') %>% 
-        layout(showlegend=FALSE)
+        layout(plot_bgcolor='rgba(0, 0, 0, 0)') %>% 
+        layout(paper_bgcolor='rgba(0, 0, 0, 0)')
     })
   })
   

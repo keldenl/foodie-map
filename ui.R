@@ -1,4 +1,6 @@
 library(shiny)
+library(rsconnect)
+
 
 source("./scripts/mapLocation.R")
 # Define UI for application that draws a histogram
@@ -10,7 +12,7 @@ shinyUI(fluidPage(theme = "style.css",
   ),
   # Application title
   conditionalPanel(condition="$('html').hasClass('shiny-busy')",
-                   tags$div("Loading Graph, please wait...",id="loadmessage")),
+                   tags$div("Loading Graph",id="loadmessage", tags$div(id="loader"))),
   navbarPage("Tabs", id="tabs",
     tabPanel(title="Foodie Map", value="main",
       div(id="header"),
@@ -55,14 +57,15 @@ shinyUI(fluidPage(theme = "style.css",
                 sliderInput("num.restaurants", label = p("# of Restaurants"), 
                             min = 50,
                             max = 450,
+                            step = 50,
                             value = 250),
                 checkboxInput("open.now", 
                               label = p("Only show currently opened"),
                               value = FALSE),
-                actionButton("filter", "Update graph"),
-                actionButton("main", "Search again")
-         )
-         
+                actionButton("filter", "Filter"),
+                actionButton("main", "Search again"),
+                textOutput(outputId = "returnAmount")
+        )
        )
   )
 )))
