@@ -39,7 +39,7 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
     ## PRICE
     maps <- ggmap(map1) +
       # Add restaurant markers
-      geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price,
+      geom_point(data=df, aes(name=name, categories=categories, rating=rating, reviews=rev_count, price=price,
                               x=long, y=lat, color=as.numeric(price)), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
       theme(axis.title.x=element_blank(),
@@ -59,9 +59,9 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
     
     maps <- ggmap(map1) +
       # Add restaurant markers
-      geom_point(data=subset(df, rev_count <= 500), aes(name=name, rating=rating, reviews=rev_count, 
+      geom_point(data=subset(df, rev_count <= 500), aes(name=name, categories=categories, rating=rating, reviews=rev_count, 
                                                         price=price, x=long, y=lat, color=rev_count), size=4, alpha=.8) +
-      geom_point(data=subset(df, rev_count > 500), aes(name=name, rating=rating, reviews=rev_count, 
+      geom_point(data=subset(df, rev_count > 500), aes(name=name, categories=categories, rating=rating, reviews=rev_count, 
                                                        price=price, x=long, y=lat, fill=review_500), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
       theme(axis.title.x=element_blank(),
@@ -78,7 +78,7 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
     ## RATINGS
     maps <- ggmap(map1) +
       # Add restaurant markers
-      geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price,
+      geom_point(data=df, aes(name=name, categories=categories, rating=rating, reviews=rev_count, price=price,
                               x=long, y=lat, color=rating), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
       theme(
@@ -94,7 +94,7 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
         labs(color="Rating")
   }
   # Make ggplot
-  maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), 
+  maps <- ggplotly(maps, tooltip = c("name", "categories", "rating", "reviews", "price"), 
                    dynamicTicks = FALSE, width = 700, height = 580)
   return (maps)
 }
