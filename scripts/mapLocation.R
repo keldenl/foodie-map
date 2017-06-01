@@ -34,14 +34,14 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
   location <- c(lon = long_lat[1], lat = long_lat[2])
   map1 <- get_map(location = location, source = "google", zoom = mapZoom)
   
-  # Make a map with restaurants as points on it
+  # Make a map with restaurants as points on i
+  ## PRICE
   if (heat == "price") {
-    ## PRICE
     maps <- ggmap(map1) +
-      # Add restaurant markers
       geom_point(data=df, aes(name=name, categories=categories, rating=rating, reviews=rev_count, price=price,
                               x=long, y=lat, color=as.numeric(price)), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
+      # Custom style for the graph
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
             axis.ticks.x=element_blank(),
@@ -50,20 +50,23 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
             axis.ticks.y=element_blank(),
             legend.background = element_rect(fill="rgba(0, 0, 0, 0"),
             legend.title = element_text(color="white"),
-            legend.text = element_text(color="white")) +
+            legend.text = element_text(color="white"))+
       labs(color="Price (1=$)")
-  } else if (heat == "review.count") {
-    ## REVIEWS
+  } 
+  
+  ## REVIEWS
+  else if (heat == "review.count") {
     df$review_500 <- "> 500"
     df$review_500[df$rev_count <= 500] <- NA
     
     maps <- ggmap(map1) +
-      # Add restaurant markers
+      # Plot (subsets) twice to remove outliers (> 500 review counts)
       geom_point(data=subset(df, rev_count <= 500), aes(name=name, categories=categories, rating=rating, reviews=rev_count, 
                                                         price=price, x=long, y=lat, color=rev_count), size=4, alpha=.8) +
       geom_point(data=subset(df, rev_count > 500), aes(name=name, categories=categories, rating=rating, reviews=rev_count, 
                                                        price=price, x=long, y=lat, fill=review_500), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
+      # Custom style for the graph
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
             axis.ticks.x=element_blank(),
@@ -72,27 +75,29 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
             axis.ticks.y=element_blank(),
             legend.background = element_rect(fill="rgba(0, 0, 0, 0"),
             legend.title = element_text(color="white"),
-            legend.text = element_text(color="white")) +
+            legend.text = element_text(color="white"))+
       labs(color="# of Reviews", fill="")
-  } else {
-    ## RATINGS
+  } 
+  
+  ## RATINGS
+  else {
     maps <- ggmap(map1) +
-      # Add restaurant markers
       geom_point(data=df, aes(name=name, categories=categories, rating=rating, reviews=rev_count, price=price,
                               x=long, y=lat, color=rating), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
-      theme(
-        axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.y=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
-        legend.background = element_rect(fill="rgba(0, 0, 0, 0"),
-        legend.title = element_text(color="white"),
-        legend.text = element_text(color="white")) +
-        labs(color="Rating")
+      # Custom style for the graph
+      theme(axis.title.x=element_blank(),
+            axis.text.x=element_blank(),
+            axis.ticks.x=element_blank(),
+            axis.title.y=element_blank(),
+            axis.text.y=element_blank(),
+            axis.ticks.y=element_blank(),
+            legend.background = element_rect(fill="rgba(0, 0, 0, 0"),
+            legend.title = element_text(color="white"),
+            legend.text = element_text(color="white"))+
+      labs(color="Rating")
   }
+  
   # Make ggplot
   maps <- ggplotly(maps, tooltip = c("name", "categories", "rating", "reviews", "price"), 
                    dynamicTicks = FALSE, width = 700, height = 580)

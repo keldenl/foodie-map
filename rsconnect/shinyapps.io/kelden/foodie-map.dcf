@@ -3,9 +3,9 @@ title: foodie-map
 account: kelden
 server: shinyapps.io
 appId: 185343
-bundleId: 848578
+bundleId: 849430
 url: https://kelden.shinyapps.io/foodie-map/
-when: 1496311733.90299
+when: 1496348152.52509
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: www/bg.jpg|www/bg.jpg.ai|www/bg.png|www/bg1.ai
