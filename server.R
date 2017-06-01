@@ -41,8 +41,9 @@ shinyServer(function(input, output, session) {
     output$graph <- renderPlotly({
       generateGraph(df, long_lat, input$map.zoom, input$category, input$min.rating, 
                     input$price.range, input$heatmap.type) %>% 
-        layout(plot_bgcolor='rgba(0, 0, 0, 0)') %>% 
-        layout(paper_bgcolor='rgba(0, 0, 0, 0)')
+        layout(plot_bgcolor='rgba(0, 0, 0, 1)') %>% 
+        layout(paper_bgcolor='rgba(0, 0, 0, 1)') %>% 
+        layout(showlegend=FALSE)
     })
   })
   

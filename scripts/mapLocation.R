@@ -12,7 +12,6 @@ library(ggplot2) #install.packages("ggplot2", type = "source")
 library(plotly)
 
 # Set Variables
-prog <- 0
 limit <- 50 # Unchanged
 
 generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) {
@@ -27,8 +26,10 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
   # Price filter
   df <- filter(df, as.numeric(price) %in% price_range)
   
+  # Zoom filter
   mapNormal <- 15
-  mapZoom <- mapNormal - (scope - 2)
+  mapZoom <- mapNormal - (2 - scope)
+  
   # Get a map for the location entered
   location <- c(lon = long_lat[1], lat = long_lat[2])
   map1 <- get_map(location = location, source = "google", zoom = mapZoom)
@@ -39,7 +40,7 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
     maps <- ggmap(map1) +
       # Add restaurant markers
       geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price,
-                              x=long, y=lat, color=as.numeric(price)), size=3, alpha=.7) +
+                              x=long, y=lat, color=as.numeric(price)), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
@@ -59,9 +60,9 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
     maps <- ggmap(map1) +
       # Add restaurant markers
       geom_point(data=subset(df, rev_count <= 500), aes(name=name, rating=rating, reviews=rev_count, 
-                                                        price=price, x=long, y=lat, color=rev_count), size=3, alpha=.7) +
+                                                        price=price, x=long, y=lat, color=rev_count), size=4, alpha=.8) +
       geom_point(data=subset(df, rev_count > 500), aes(name=name, rating=rating, reviews=rev_count, 
-                                                       price=price, x=long, y=lat, fill=review_500), size=3, alpha=.7) +
+                                                       price=price, x=long, y=lat, fill=review_500), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
@@ -72,25 +73,25 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
             legend.background = element_rect(fill="rgba(0, 0, 0, 0"),
             legend.title = element_text(color="white"),
             legend.text = element_text(color="white")) +
-      labs(color="# of Reviews", fill=".")
+      labs(color="# of Reviews", fill="")
   } else {
     ## RATINGS
     maps <- ggmap(map1) +
       # Add restaurant markers
       geom_point(data=df, aes(name=name, rating=rating, reviews=rev_count, price=price,
-                              x=long, y=lat, color=rating), size=3, alpha=.7) +
+                              x=long, y=lat, color=rating), size=4, alpha=.8) +
       scale_colour_gradient(low="yellow",high="red") +
-      theme(axis.title.x=element_blank(),
-            axis.text.x=element_blank(),
-            axis.ticks.x=element_blank(),
-            axis.title.y=element_blank(),
-            axis.text.y=element_blank(),
-            axis.ticks.y=element_blank(),
-            legend.background = element_rect(fill="rgba(0, 0, 0, 0"),
-            legend.title = element_text(color="white"),
-            legend.text = element_text(color="white"),
-            legend.justification=c(1,1),legend.position=c(1,1)) +
-      labs(color="Rating")
+      theme(
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.background = element_rect(fill="rgba(0, 0, 0, 0"),
+        legend.title = element_text(color="white"),
+        legend.text = element_text(color="white")) +
+        labs(color="Rating")
   }
   # Make ggplot
   maps <- ggplotly(maps, tooltip = c("name", "rating", "reviews", "price"), 

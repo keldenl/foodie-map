@@ -18,8 +18,8 @@ shinyUI(fluidPage(theme = "style.css",
       # Sidebar with a slider input for the number of bi
       # Show a plot of the generated distribution
       mainPanel(
-        div(id="initSearch", textInput("loc", label = NULL, placeholder = "Enter your location"),
-            div(id="buttons", actionButton("submitSearch", "Search Map"), actionButton("logIn", "Surprise Me"))
+        div(id="initSearch", textInput("loc", label = NULL, placeholder = "Enter your current address"),
+            div(id="buttons", actionButton("submitSearch", "Search Map"), actionButton("surprise", "Surprise Me"))
         )
       )
     ),
@@ -41,7 +41,7 @@ shinyUI(fluidPage(theme = "style.css",
                    verbatimTextOutput("ratingVal")
             ),
             column(6,
-               sliderInput("map.zoom", label = p("Map Scope"), 
+               sliderInput("map.zoom", label = p("Map Zoom"), 
                            min = 1,
                            max = 3,
                            value = 2),
