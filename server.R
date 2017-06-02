@@ -5,10 +5,10 @@ source("./scripts/mapLocation.R")
 shinyServer(function(input, output, session) {
   # "Surprise me" enters the location of the UW Ave to search
   observeEvent(input$surprise, {
-    updateTextInput(session, inputId = "loc", value = "University way, Seattle WA")
+    updateTextInput(session, inputId = "loc", value = "University Way, Seattle WA")
   })
   
-  # Initial search function 
+  # Search function 
   observeEvent(input$submitSearch, {
     updateMap()
     updateTabsetPanel(session, inputId = "tabs", selected = "graph")
@@ -35,7 +35,7 @@ shinyServer(function(input, output, session) {
   output$min.rating <- renderPrint({input$min.rating})
   output$price.range <- renderPrint({input$price.range})
   output$map.zoom <- renderPrint({input$map.zoom})
-  output$ratingVal <- renderPrint({ numbers() }) 
+  output$ratingVal <- renderPrint({ numbers() })
   
   # Function that returns the map/graph
   updateMap <- function() {
@@ -60,5 +60,4 @@ shinyServer(function(input, output, session) {
     updateSelectInput(session, inputId = "category", 
                       choices = getCategory(df, input$loc, input$num.restaurants))
   }
-  
 })

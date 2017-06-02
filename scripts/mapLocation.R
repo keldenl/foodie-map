@@ -33,7 +33,7 @@ generateGraph <- function(df, long_lat, scope, cat, min_rat, price_range, heat) 
     maps <- ggmap(map1) +
       geom_point(data=df, aes(name=name, categories=categories, rating=rating, reviews=rev_count, price=price,
                               x=long, y=lat, color=as.numeric(price)), size=4, alpha=.8) +
-      labs(color="Price (1=$, 4=$$$$)")
+      labs(color="Price (1=$)")
   } 
   # HEATMAP OPTION 2: REVIEWS
   else if (heat == "review.count") {

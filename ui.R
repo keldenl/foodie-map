@@ -1,34 +1,37 @@
 library(shiny)
 library(rsconnect)
-
-
 source("./scripts/mapLocation.R")
-# Define UI for application that draws a histogram
+
+# Define UI for application
 shinyUI(fluidPage(theme = "style.css",
+  # Implement style.css, import "Lato" font
   tags$head(
     tags$style(HTML("
       @import url('https://fonts.googleapis.com/css?family=Lato:300,400,700,900');
     "))
   ),
-  # Application title
+  # Loading bar (Top)
   conditionalPanel(condition="$('html').hasClass('shiny-busy')",
-                   tags$div("Loading Graph",id="loadmessage", tags$div(id="loader"))),
+                   div("Loading Graph",id="loadmessage", div(id="loader"))),
+  # Page navigation control
   navbarPage("Tabs", id="tabs",
+    # Landing page
     tabPanel(title="Foodie Map", value="main",
       div(id="header"),
       headerPanel("Foodie Map"),
-      # Sidebar with a slider input for the number of bi
-      # Show a plot of the generated distribution
       mainPanel(
         div(id="initSearch", textInput("loc", label = NULL, placeholder = "Enter your current address"),
             div(id="buttons", actionButton("submitSearch", "Search Map"), actionButton("surprise", "Surprise Me"))
         )
       )
     ),
+    # Graph/Filter Page
     tabPanel(title="Your Heatmap", value="graph",
-       plotlyOutput("graph", height = "560px"),
+       plotlyOutput("graph", height = "560px"), # Plot
        hr(),
+       # Filters
        fluidRow(
+         # Dynamic Filters (Change on the fly)
          column(7,
             h4("Dynamic Filters"),
             column(6,
@@ -52,6 +55,7 @@ shinyUI(fluidPage(theme = "style.css",
                                   selected = c(1,2,3,4))
              )
          ),
+         # Static Filters (Filters that require re-fetching from the API)
          column(4,
                 h4("Static Filters"),
                 sliderInput("num.restaurants", label = p("# of Restaurants"), 
