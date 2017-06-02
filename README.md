@@ -20,4 +20,4 @@ We tailor the data we get from Yelp's API based on static filters and dynamic fi
 
 We believe that by visually representing restaurants' data, we will provide our users the data they wanted at a glance. For instance, they can see the price trend from our map and choose the area they believe is a good fit for their budget. 
 
-[Check out our app by clicking here](https://kelden.shinyapps.io/foodie-map/)
+# [Check out our app by clicking here](https://kelden.shinyapps.io/foodie-map/)
